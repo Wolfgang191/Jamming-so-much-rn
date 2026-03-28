@@ -10,11 +10,22 @@
 
 
 let es = [];
+let spawns = [];
 
 
 function preload() {
 	PixelComicSans = loadFont('PixelComicSans-Regular.otf');
+	car = loadImage('assets/car1.png');
+	car2 = loadImage('assets/convertible_car.png');
+	hydrant = loadImage('assets/hydrant.png');
+	trashBag = loadImage('assets/trash_bag.png');
+	trashBag2 = loadImage('assets/trash_bag_2.png');
+	trashCan = loadImage('assets/trash_can.png');
+	trashCan2 = loadImage('assets/trash_can_2.png');
+	trashHeap = loadImage('assets/trash_heap.png');
 }
+
+
 
 function setup() {
 	createCanvas(windowWidth, windowHeight);
@@ -32,6 +43,8 @@ function setup() {
 
 	reset();
 } // end setup
+
+
 
 function reset() {
 	death = false;
@@ -52,6 +65,8 @@ function reset() {
 	score = 0;
 	textTime = 0;
 	playerScore = 0;
+
+	zoom = 0.7; // smaller = more zoomed OUT
 } // reset
 
 
@@ -71,15 +86,40 @@ function draw() {
     		camY = playerY - height / 2;
 
     		push();
-
-    		translate(-camX, -camY); // move world relative to camera
+			translate(width / 2, height / 2); // center screen
+			scale(zoom);
+			translate(-playerX, -playerY); // follow player
 
 
 			road();
 
+			// if (frameCount % 60 === 0) { 
+				itemSpawn();
+			// }
+			image(trashHeap, width / 2, height / 2);
+
 			eSpawn();
 
 			move();
+
+			// for (let spawn of spawns) {
+			// 	spawn.display();
+			// 	spawn.update();
+			// }
+
+			print(spawns.length);
+
+			for (let i = spawns.length - 1; i >= 0; i--) {
+				spawns[i].update();
+				spawns[i].display();
+
+			// delete when off left side
+				if (spawns[i].x < camX - 500) {
+					spawns.splice(i, 1);
+				}
+			}
+
+	
 			fill('white');
 			rect(playerX, playerY, playerSize, playerSize); // player
 
@@ -165,6 +205,15 @@ function eSpawn() {
 
 
 
+
+function itemSpawn() {
+	if (spawns.length === 0) {
+		spawns.push(new Spawn(camX + width + 500, height * 0.85));
+	}
+}
+
+
+
 function road() {
 	fill('yellow');
 	
@@ -177,7 +226,15 @@ function road() {
 		rect(x, height / 2, sizez * 0.04, sizez * 0.02);
 	}	
 
+	let roadY = height / 2;
+	let roadHeight = sizez * 0.2;
 
+	fill(50, 150, 50);
+
+	// top
+	rect(width / 2, roadY - roadHeight - height / 2, width * 3, height);
+	// bottem
+	rect(width / 2, roadY + roadHeight + height / 2, width * 3, height);
 	
 			
 			// for (let x = 0; x < width; x += sizez * 0.06) {
@@ -187,4 +244,19 @@ function road() {
 			
 
 	// rect(width / 2,height / 2, sizez * 0.04, sizez * 0.02);
+
+	image(car, width * -0.1, height / 2, sizez * 0.135, sizez * 0.135);
+	image(trashCan2, width * -0.1, height * 0.25, sizez * 0.135, sizez * 0.135);
+	image(car2, width * -0.125, height * 0.05, sizez * 0.135, sizez * 0.135);
+	image(trashHeap, width * -0.115, height * 0.73, sizez * 0.2, sizez * 0.2);
+	image(trashCan, width * -0.1, height * 0.85, sizez * 0.135, sizez * 0.135);
+	image(trashCan, width * -0.09, height * 0.925, sizez * 0.135, sizez * 0.135);
+	image(trashBag, width * -0.15, height * 0.9, sizez * 0.18, sizez * 0.18);
+	image(trashCan2, width * -0.115, height * 1, sizez * 0.135, sizez * 0.135);
+	image(trashBag2, width * -0.15, height * 0.215, sizez * 0.18, sizez * 0.18);
+
+
+
+
+
 }
