@@ -65,12 +65,25 @@ function draw() {
 		case 1:
 			background(88);
 
-			eSpawn();
+			
 
+			camX = playerX - width / 2;
+    		camY = playerY - height / 2;
+
+    		push();
+
+    		translate(-camX, -camY); // move world relative to camera
+
+
+			road();
+
+			eSpawn();
 
 			move();
 			fill('white');
 			rect(playerX, playerY, playerSize, playerSize); // player
+
+			pop();
 
 			drawOverlay();
 
@@ -84,11 +97,11 @@ function draw() {
 function move() {
 	if (gameStart == true) {
 		// up
-		if (keyIsDown(87) || keyIsDown(38))	{
+		if ((keyIsDown(87) || keyIsDown(38)) && playerY > 0)	{
 			playerY -= playerSpeed;
 		}  
 		// down
-		if (keyIsDown(83) && playerY < height)	{
+		if ((keyIsDown(83) || keyIsDown(40)) && playerY < height)	{
 			playerY += playerSpeed
 		}		
 		// left
@@ -96,7 +109,7 @@ function move() {
 			playerX -= playerSpeed
 		}
 		// right
-		if ((keyIsDown(68) || keyIsDown(39)) && playerX < width)	{
+		if (keyIsDown(68) || keyIsDown(39))	{ //  && playerX < width
 			playerX += playerSpeed
 		}
 	} // end if
@@ -112,7 +125,8 @@ function drawUI() {
 
 
 function drawOverlay() {
-	
+	fill('green');
+	rect(width * 0.2, height * 0.85, sizez * 0.075, sizez * 0.02);
 } // end drawOverlay
 
 
@@ -147,4 +161,30 @@ function eSpawn() {
 		es[i].display();
   		es[i].update();	
 	} 	// end of for loop
+}
+
+
+
+function road() {
+	fill('yellow');
+	
+	let spacing = sizez * 0.1;
+
+	let startX = Math.floor(camX / spacing) * spacing - width;   
+	let endX   = camX + width * 2;                               
+
+	for (let x = startX; x < endX; x += spacing) {
+		rect(x, height / 2, sizez * 0.04, sizez * 0.02);
+	}	
+
+
+	
+			
+			// for (let x = 0; x < width; x += sizez * 0.06) {
+    		// 	rect(x, height / 2, sizez * 0.04, sizez * 0.02);
+			// }
+
+			
+
+	// rect(width / 2,height / 2, sizez * 0.04, sizez * 0.02);
 }

@@ -17,12 +17,14 @@ class E {
 
 
     update() { 
+        
+
         this.x -= this.speed;
         
-        if (this.x < -sizez * 0.02) { 
-            this.y = random(0, height);
-            this.x = width;
-        }
+    if (this.x < camX - width / 2 - sizez * 0.02) {
+        this.y = random(0, height);           // optional: constrain to road
+        this.x = camX + width + sizez * 0.02;
+    }
     }
 
 
