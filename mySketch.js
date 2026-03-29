@@ -20,6 +20,13 @@ let booms = [];
 
 let scene = 0; 
 
+
+let velocityX = 0;
+let velocityY = 0
+let acceleration = 0.5;  
+let friction = 0.2;      
+let maxSpeed = 8;      
+
 // var sprite_sheet;
 // var dog_animation;
 
@@ -41,10 +48,12 @@ function preload() {
 	dogFrames[0] = loadImage('assets/dog_spritesheet.png');
 	dogFrames[1] = loadImage('assets/dog2.png');
 	boom = loadImage('assets/boomMS.png');
+	treat = loadImage('assets/treat.png');
 
 	music = loadSound('audio/Asher Jackson - jam v1 2026-03-27 22_32.m4a');
 
 	title = loadImage('assets/title_page_v2.jpg');
+	street = loadImage('assets/street_background.png');
 
 	// dog_animation = loadAnimation('assets/dog_spritesheet.png', 'assets/dog2.png');
 }
@@ -61,6 +70,7 @@ function setup() {
 
 	// customs
 	sizez = (width + height); 
+	// sizez = min(width, height);
 	percX = width / 100;
 	percY = height / 100;
 	perc = 0;
@@ -90,7 +100,7 @@ function reset() {
 	textTime = 0;
 	playerScore = 0;
 
-	zoom = 0.7; // smaller = more zoomed out
+	zoom = 0.8; // smaller = more zoomed out
 
 	music.setVolume(0.05); // bg
 
@@ -182,9 +192,32 @@ function draw() {
 			image(dogFrames[frameIndex], playerX, playerY, sizez * 0.125, sizez * 0.08);
 			// rect(playerX, playerY, playerSize, playerSize); // player
 
+			// for (let b of booms) {
+    		// 	image(treat, b.x, b.y);
+			// }
 			for (let b of booms) {
-    			image(boom, b.x, b.y);
+    			image(treat, b.x, b.y, b.size, b.size);
+
+				for (let i = booms.length - 1; i >= 0; i--) {
+    				let b = booms[i];
+
+    				image(treat, b.x, b.y, b.size, b.size);
+
+    				// Check if Biscuits ate the treat
+    				let d = dist(playerX, playerY, b.x, b.y);
+    				if (d < b.size) {
+        				score += 1;          // Give points
+        				booms.splice(i, 1);   // Remove the treat
+        				continue;             // Skip the rest
+    				}
+
+    				// delete when off left side
+    				if (b.x < camX - 200) {
+        				booms.splice(i, 1);
+    				}
+				}
 			}
+
 
 			pop();
 
@@ -197,39 +230,108 @@ function draw() {
 
 
 
+// function move() {
+// 	if (gameStart == true) {
+// 		// up
+// 		if ((keyIsDown(87) || keyIsDown(38)) && playerY > 0)	{
+// 			playerY -= playerSpeed;
+// 		}  
+// 		// down
+// 		if ((keyIsDown(83) || keyIsDown(40)) && playerY < height)	{
+// 			playerY += playerSpeed
+// 		}		
+// 		// left
+// 		if ((keyIsDown(65) || keyIsDown(37)) && playerX > 0)	{
+// 			playerX -= playerSpeed
+// 		}
+// 		// right
+// 		if (keyIsDown(68) || keyIsDown(39))	{ //  && playerX < width
+// 			playerX += playerSpeed
+// 		}
+// 	} // end if
+// } // end move
+
 function move() {
-	if (gameStart == true) {
-		// up
-		if ((keyIsDown(87) || keyIsDown(38)) && playerY > 0)	{
-			playerY -= playerSpeed;
-		}  
-		// down
-		if ((keyIsDown(83) || keyIsDown(40)) && playerY < height)	{
-			playerY += playerSpeed
-		}		
-		// left
-		if ((keyIsDown(65) || keyIsDown(37)) && playerX > 0)	{
-			playerX -= playerSpeed
-		}
-		// right
-		if (keyIsDown(68) || keyIsDown(39))	{ //  && playerX < width
-			playerX += playerSpeed
-		}
-	} // end if
-} // end move
+    if (gameStart == true) {
+        let isPedalingX = false;
+        let isPedalingY = false;
+
+        // Y-Axis Acceleration 
+
+        if (keyIsDown(87)  || keyIsDown(38)) { // Up (W or Arrow Up)
+            velocityY -= acceleration;
+            isPedalingY = true;
+        }
+        if (keyIsDown(83)  || keyIsDown(40)) { // Down (S or Arrow Down)
+            velocityY += acceleration;
+            isPedalingY = true;
+        }
+
+        // X-Axis Acceleration
+
+        if (keyIsDown(65)  || keyIsDown(37)) { // Left (A or Arrow Left)
+            velocityX -= acceleration;
+            isPedalingX = true;
+        }
+        if (keyIsDown(68)  || keyIsDown(39)) { // Right (D or Arrow Right)
+            velocityX += acceleration;
+            isPedalingX = true;
+        }
+
+//        Apply Friction 
+// (Coasting) 
+        if (!isPedalingX) {
+            if (velocityX > 0) {
+                // (Math.max prevents the bike from accidentally sliding backwards, right?)
+                velocityX = Math.max(0, velocityX - friction); 
+            } else if (velocityX < 0) {
+                velocityX = Math.min(0, velocityX + friction);
+            }
+        }
+
+        if (!isPedalingY) {
+            if (velocityY > 0) {
+                velocityY = Math.max(0, velocityY - friction);
+            } else if (velocityY < 0) {
+                velocityY = Math.min(0, velocityY + friction);
+            }
+        }
+
+        // Speed Caps & Movement
+
+        // (Constrain keeps the velocity from exceeding your maxSpeed)
+        velocityX = constrain(velocityX, -maxSpeed, maxSpeed);
+        velocityY = constrain(velocityY, -maxSpeed, maxSpeed);
+
+        // (Apply final velocity to position)
+        playerX += velocityX;
+        playerY += velocityY;
+
+        // Screen Boundaries
+
+        // (Prevents sliding off the map even if velocity pushes them past the edge)
+        playerX = max(0, playerX); 
+        playerY = constrain(playerY, 0, height);
+    } 
+}
 
 
 
 
 function drawUI() {
 	textSize(percX * 5);
+
 } // end drawUI
 
 
 
 function drawOverlay() {
-	fill('green');
-	rect(width * 0.2, height * 0.85, sizez * 0.075, sizez * 0.02);
+	// fill('green');
+	// rect(width * 0.2, height * 0.85, sizez * 0.075, sizez * 0.02);
+
+	fill('white');
+	stroke('black');
+	text("Treats: " + score, width * 0.2, height * 0.15);
 } // end drawOverlay
 
 
@@ -270,7 +372,7 @@ function eSpawn() {
 
 		if (es[i].hitsPlayer()) {
 			// image(boom, playerX, playerY, sizez * 0.3, sizez * 0.3);
-			booms.push({ x: es[i].x, y: es[i].y, size: sizez * 0.3 });
+			booms.push({ x: es[i].x, y: es[i].y, size: sizez * 0.05 });
 			console.log("HIT");
 			lives--;
 			es.splice(i, 1);
@@ -289,49 +391,69 @@ function itemSpawn() {
 
 
 
+// function road() {
+// 	fill('yellow');
+	
+// 	let spacing = sizez * 0.1;
+
+// 	let startX = Math.floor(camX / spacing) * spacing - width;   
+// 	let endX   = camX + width * 2;                               
+
+// 	for (let x = startX; x < endX; x += spacing) {
+// 		rect(x, height / 2, sizez * 0.04, sizez * 0.02);
+// 	}	
+
+// 	let roadY = height / 2;
+// 	let roadHeight = sizez * 0.2;
+
+// 	fill(50, 150, 50);
+
+// 	// top
+// 	rect(width / 2, roadY - roadHeight - height / 2, width * 3, height);
+// 	// bottem
+// 	rect(width / 2, roadY + roadHeight + height / 2, width * 3, height);
+	
+			
+// 			// for (let x = 0; x < width; x += sizez * 0.06) {
+//     		// 	rect(x, height / 2, sizez * 0.04, sizez * 0.02);
+// 			// }
+
+			
+
+// 	// rect(width / 2,height / 2, sizez * 0.04, sizez * 0.02);
+
+// 	image(car, width * -0.1, height / 2, sizez * 0.135, sizez * 0.135);
+// 	image(trashCan2, width * -0.1, height * 0.25, sizez * 0.135, sizez * 0.135);
+// 	image(car2, width * -0.125, height * 0.05, sizez * 0.135, sizez * 0.135);
+// 	image(trashHeap, width * -0.115, height * 0.73, sizez * 0.2, sizez * 0.2);
+// 	image(trashCan, width * -0.1, height * 0.85, sizez * 0.135, sizez * 0.135);
+// 	image(trashCan, width * -0.09, height * 0.925, sizez * 0.135, sizez * 0.135);
+// 	image(trashBag, width * -0.15, height * 0.9, sizez * 0.18, sizez * 0.18);
+// 	image(trashCan2, width * -0.115, height * 1, sizez * 0.135, sizez * 0.135);
+// 	image(trashBag2, width * -0.15, height * 0.215, sizez * 0.18, sizez * 0.18);
+
+
+
+
+
+// }
+
+
 function road() {
-	fill('yellow');
-	
-	let spacing = sizez * 0.1;
+	background('white');
 
-	let startX = Math.floor(camX / spacing) * spacing - width;   
-	let endX   = camX + width * 2;                               
+    let imgW = street.width;
+    let imgH = street.height;
 
-	for (let x = startX; x < endX; x += spacing) {
-		rect(x, height / 2, sizez * 0.04, sizez * 0.02);
-	}	
+    let scaleFactor = sizez * 0.00025; 
+    let w = imgW * scaleFactor;
+    let h = imgH * scaleFactor;
 
-	let roadY = height / 2;
-	let roadHeight = sizez * 0.2;
+    let startX = Math.floor(camX / w) * w - w * 2;
+    let endX = camX + width * 2;
 
-	fill(50, 150, 50);
-
-	// top
-	rect(width / 2, roadY - roadHeight - height / 2, width * 3, height);
-	// bottem
-	rect(width / 2, roadY + roadHeight + height / 2, width * 3, height);
-	
-			
-			// for (let x = 0; x < width; x += sizez * 0.06) {
-    		// 	rect(x, height / 2, sizez * 0.04, sizez * 0.02);
-			// }
-
-			
-
-	// rect(width / 2,height / 2, sizez * 0.04, sizez * 0.02);
-
-	image(car, width * -0.1, height / 2, sizez * 0.135, sizez * 0.135);
-	image(trashCan2, width * -0.1, height * 0.25, sizez * 0.135, sizez * 0.135);
-	image(car2, width * -0.125, height * 0.05, sizez * 0.135, sizez * 0.135);
-	image(trashHeap, width * -0.115, height * 0.73, sizez * 0.2, sizez * 0.2);
-	image(trashCan, width * -0.1, height * 0.85, sizez * 0.135, sizez * 0.135);
-	image(trashCan, width * -0.09, height * 0.925, sizez * 0.135, sizez * 0.135);
-	image(trashBag, width * -0.15, height * 0.9, sizez * 0.18, sizez * 0.18);
-	image(trashCan2, width * -0.115, height * 1, sizez * 0.135, sizez * 0.135);
-	image(trashBag2, width * -0.15, height * 0.215, sizez * 0.18, sizez * 0.18);
-
-
-
-
+    for (let x = startX; x < endX; x += w) {
+        image(street, x + w / 2, height / 2, w, h);
+    }
 
 }
