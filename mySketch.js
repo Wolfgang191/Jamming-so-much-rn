@@ -23,6 +23,8 @@ function preload() {
 	trashCan = loadImage('assets/trash_can.png');
 	trashCan2 = loadImage('assets/trash_can_2.png');
 	trashHeap = loadImage('assets/trash_heap.png');
+	shopVac = loadImage('assets/shop_vac.png');
+	standupVac = loadImage('assets/standup_vac.png');
 }
 
 
