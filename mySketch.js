@@ -12,9 +12,20 @@
 let es = [];
 let spawns = [];
 
+let dogFrames = [];
+let frameIndex = 0;
+
+
+
+
+// var sprite_sheet;
+// var dog_animation;
+
+
 
 function preload() {
 	PixelComicSans = loadFont('PixelComicSans-Regular.otf');
+	
 	car = loadImage('assets/car1.png');
 	car2 = loadImage('assets/convertible_car.png');
 	hydrant = loadImage('assets/hydrant.png');
@@ -25,6 +36,10 @@ function preload() {
 	trashHeap = loadImage('assets/trash_heap.png');
 	shopVac = loadImage('assets/shop_vac.png');
 	standupVac = loadImage('assets/standup_vac.png');
+	dogFrames[0] = loadImage('assets/dog_spritesheet.png');
+	dogFrames[1] = loadImage('assets/dog2.png');
+
+	// dog_animation = loadAnimation('assets/dog_spritesheet.png', 'assets/dog2.png');
 }
 
 
@@ -61,7 +76,7 @@ function reset() {
 	lives = 3;
 	playerX = width / 2;
 	playerY = height / 2;
-	playerSize = sizez * 0.04;
+	playerSize = sizez * 0.1;
 	cam = playerX * 0.8; 
 	speedLimit = 1;
 	score = 0;
@@ -69,12 +84,18 @@ function reset() {
 	playerScore = 0;
 
 	zoom = 0.7; // smaller = more zoomed OUT
+
+	// dogFrame = dog1;
 } // reset
 
 
 
 
+
 function draw() {
+
+	console.log(typeof loadSpriteSheet);
+
 	switch(scene) {
 		case 0:
 			StartScene();
@@ -121,9 +142,31 @@ function draw() {
 				}
 			}
 
+
+			// for (let i = es.length - 1; i >= 0; i--) {
+    		// 	es[i].update();
+    		// 	es[i].display();
+
+    		// 	if (es[i].hitsPlayer()) {
+        	// 		console.log("HIT");
+
+    
+        	// 	lives--;
+
+        	// 	es.splice(i, 1);
+    		// 	}
+			// }
+
 	
 			fill('white');
-			rect(playerX, playerY, playerSize, playerSize); // player
+			// animation(dog_animation, playerX, playerY);
+
+			// switch frame every 10 frames
+			frameIndex = floor(frameCount / 10) % 2;
+
+			// draw current frame
+			image(dogFrames[frameIndex], playerX, playerY, sizez * 0.125, sizez * 0.08);
+			// rect(playerX, playerY, playerSize, playerSize); // player
 
 			pop();
 
@@ -202,6 +245,12 @@ function eSpawn() {
 		es.push(new E(random(0, height), random(2, 5)));
 		es[i].display();
   		es[i].update();	
+
+		if (es[i].hitsPlayer()) {
+			console.log("HIT");
+			lives--;
+			es.splice(i, 1);
+		}
 	} 	// end of for loop
 }
 
