@@ -18,7 +18,7 @@ let frameIndex = 0;
 let booms = [];
 
 
-
+let scene = 0; 
 
 // var sprite_sheet;
 // var dog_animation;
@@ -41,6 +41,8 @@ function preload() {
 	dogFrames[0] = loadImage('assets/dog_spritesheet.png');
 	dogFrames[1] = loadImage('assets/dog2.png');
 	boom = loadImage('assets/boomMS.png');
+
+	music = loadSound('audio/Asher Jackson - jam v1 2026-03-27 22_32.m4a');
 
 	// dog_animation = loadAnimation('assets/dog_spritesheet.png', 'assets/dog2.png');
 }
@@ -86,7 +88,13 @@ function reset() {
 	textTime = 0;
 	playerScore = 0;
 
-	zoom = 0.7; // smaller = more zoomed OUT
+	zoom = 0.7; // smaller = more zoomed out
+
+	music.setVolume(0.05); // bg
+
+	if (!music.isPlaying()) {
+        music.loop(); 
+    }
 
 	// dogFrame = dog1;
 } // reset
