@@ -44,6 +44,8 @@ function preload() {
 
 	music = loadSound('audio/Asher Jackson - jam v1 2026-03-27 22_32.m4a');
 
+	title = loadImage('assets/title_page_v2.jpg');
+
 	// dog_animation = loadAnimation('assets/dog_spritesheet.png', 'assets/dog2.png');
 }
 
@@ -234,11 +236,15 @@ function drawOverlay() {
 
 function StartScene() {
 	background(88);
+	image(title, width / 2, height / 2, sizez * 0.4, sizez * 0.35);
 	textSize(percX * 2.75);
-	text("Some Random Game I Suppose?", width / 2, height / 2);
+	// text("BARKPOCALYPSE", width / 2, height / 2);
 
-	textSize(percX * 2.25);
-	text("PRESS START", width / 2, height * 0.75);
+	textSize(percX * 3);
+	stroke('black');
+	strokeWeight(sizez * 0.008);
+	fill('white');
+	text("PRESS START", width / 2, height * 0.7);
 }
 
 
