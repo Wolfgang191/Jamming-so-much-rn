@@ -15,6 +15,8 @@ let spawns = [];
 let dogFrames = [];
 let frameIndex = 0;
 
+let booms = [];
+
 
 
 
@@ -38,6 +40,7 @@ function preload() {
 	standupVac = loadImage('assets/standup_vac.png');
 	dogFrames[0] = loadImage('assets/dog_spritesheet.png');
 	dogFrames[1] = loadImage('assets/dog2.png');
+	boom = loadImage('assets/boomMS.png');
 
 	// dog_animation = loadAnimation('assets/dog_spritesheet.png', 'assets/dog2.png');
 }
@@ -164,9 +167,14 @@ function draw() {
 			// switch frame every 10 frames
 			frameIndex = floor(frameCount / 10) % 2;
 
+			
 			// draw current frame
 			image(dogFrames[frameIndex], playerX, playerY, sizez * 0.125, sizez * 0.08);
 			// rect(playerX, playerY, playerSize, playerSize); // player
+
+			for (let b of booms) {
+    			image(boom, b.x, b.y);
+			}
 
 			pop();
 
@@ -247,6 +255,8 @@ function eSpawn() {
   		es[i].update();	
 
 		if (es[i].hitsPlayer()) {
+			// image(boom, playerX, playerY, sizez * 0.3, sizez * 0.3);
+			booms.push({ x: es[i].x, y: es[i].y, size: sizez * 0.3 });
 			console.log("HIT");
 			lives--;
 			es.splice(i, 1);
