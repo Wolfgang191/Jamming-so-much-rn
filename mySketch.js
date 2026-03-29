@@ -53,9 +53,11 @@ function preload() {
 	music = loadSound('audio/Asher Jackson - jam v1 2026-03-27 22_32.m4a');
 	eat = loadSound('audio/treat.wav');
 	pedaling = loadSound('audio/bicycle.wav');
+	GOATren = loadSound('audio/Dog_jam.wav');
 
 	title = loadImage('assets/title_page_v2.jpg');
 	street = loadImage('assets/street_background.png');
+	comicFull = loadImage('assets/intro_comic.png');
 
 	// dog_animation = loadAnimation('assets/dog_spritesheet.png', 'assets/dog2.png');
 }
@@ -126,6 +128,12 @@ function draw() {
 	switch(scene) {
 		case 0:
 			StartScene();
+			break;
+
+		case 0.5:
+			background('white');
+			image(comicFull, width / 2, height * 0.4, sizez * 0.3, sizez * 0.275);
+			text("PRESS SPACE", width / 2, height * 0.98);
 			break;
 		case 1:
 			background(88);
@@ -371,7 +379,7 @@ function StartScene() {
 	stroke('black');
 	strokeWeight(sizez * 0.008);
 	fill('white');
-	text("PRESS START", width / 2, height * 0.7);
+	text("PRESS ENTER", width / 2, height * 0.7);
 }
 
 
@@ -382,6 +390,10 @@ function keyPressed() {
 		fullscreen(!fs);
 	}
 	if (scene == 0) {
+		scene = 0.5;
+		// gameStart = true;
+	}
+	if (scene == 0.5 && keyCode == '32') {
 		scene = 1;
 		gameStart = true;
 	}
