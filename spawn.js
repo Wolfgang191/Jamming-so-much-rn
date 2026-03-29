@@ -14,7 +14,7 @@ class Spawn {
 
 
     display() {
-        image(this.randomSpawn, this.x, this.y, sizez * 0.135, sizez * 0.135);
+        image(this.randomSpawn, this.x, this.y, sizez * 0.13, sizez * 0.12);
     }
 
 

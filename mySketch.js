@@ -51,6 +51,8 @@ function preload() {
 	treat = loadImage('assets/treat.png');
 
 	music = loadSound('audio/Asher Jackson - jam v1 2026-03-27 22_32.m4a');
+	eat = loadSound('audio/treat.wav');
+	pedaling = loadSound('audio/bicycle.wav');
 
 	title = loadImage('assets/title_page_v2.jpg');
 	street = loadImage('assets/street_background.png');
@@ -103,6 +105,8 @@ function reset() {
 	zoom = 0.8; // smaller = more zoomed out
 
 	music.setVolume(0.05); // bg
+	eat.setVolume(0.5); 
+	pedaling.setVolume(0.45);
 
 	if (!music.isPlaying()) {
         music.loop(); 
@@ -142,7 +146,7 @@ function draw() {
 			// if (frameCount % 60 === 0) { 
 				itemSpawn();
 			// }
-			image(trashHeap, width / 2, height / 2);
+			// image(trashHeap, width / 2, height / 2);
 
 			eSpawn();
 
@@ -166,6 +170,9 @@ function draw() {
 			}
 
 
+
+
+			
 			// for (let i = es.length - 1; i >= 0; i--) {
     		// 	es[i].update();
     		// 	es[i].display();
@@ -206,6 +213,9 @@ function draw() {
     				// Check if Biscuits ate the treat
     				let d = dist(playerX, playerY, b.x, b.y);
     				if (d < b.size) {
+						if (!eat.isPlaying()) {
+        					eat.play(); 
+    					}
         				score += 1;          // Give points
         				booms.splice(i, 1);   // Remove the treat
         				continue;             // Skip the rest
@@ -217,6 +227,10 @@ function draw() {
     				}
 				}
 			}
+
+
+
+
 
 
 			pop();
@@ -312,7 +326,18 @@ function move() {
         // (Prevents sliding off the map even if velocity pushes them past the edge)
         playerX = max(0, playerX); 
         playerY = constrain(playerY, 0, height);
-    } 
+
+		if (isPedalingX || isPedalingY) {
+    		if (!pedaling.isPlaying()) {
+        		pedaling.loop();   // smooth continuous sound
+    		}
+			} else {
+    			if (pedaling.isPlaying()) {
+        			pedaling.stop();   // stop when not moving
+    			}
+			}
+
+    	} 
 }
 
 
@@ -337,7 +362,7 @@ function drawOverlay() {
 
 
 function StartScene() {
-	background(88);
+	background('white');
 	image(title, width / 2, height / 2, sizez * 0.4, sizez * 0.35);
 	textSize(percX * 2.75);
 	// text("BARKPOCALYPSE", width / 2, height / 2);
@@ -365,19 +390,24 @@ function keyPressed() {
 
 
 function eSpawn() {
+
+
+
 	for (let i = 0; i < 5; i++) {
-		es.push(new E(random(0, height), random(2, 5)));
+		// if (frameCount % 60 === 0) {  // once per second
+			es.push(new E(random(0, height), random(2, 5)));
+		// }
 		es[i].display();
   		es[i].update();	
 
 		if (es[i].hitsPlayer()) {
-			// image(boom, playerX, playerY, sizez * 0.3, sizez * 0.3);
-			booms.push({ x: es[i].x, y: es[i].y, size: sizez * 0.05 });
-			console.log("HIT");
-			lives--;
-			es.splice(i, 1);
-		}
-	} 	// end of for loop
+				// image(boom, playerX, playerY, sizez * 0.3, sizez * 0.3);
+				booms.push({ x: es[i].x, y: es[i].y, size: sizez * 0.05 });
+				console.log("HIT");
+				lives--;
+				es.splice(i, 1);
+			}
+		} 	// end of for loop
 }
 
 
@@ -455,5 +485,15 @@ function road() {
     for (let x = startX; x < endX; x += w) {
         image(street, x + w / 2, height / 2, w, h);
     }
+
+	image(car, width * -0.17, height / 2, sizez * 0.18, sizez * 0.115);
+	image(trashCan2, width * -0.15, height * 0.25, sizez * 0.135, sizez * 0.135);
+	image(car2, width * -0.18, height * 0.05, sizez * 0.135, sizez * 0.135);
+	image(trashHeap, width * -0.18, height * 0.73, sizez * 0.2, sizez * 0.2);
+	// image(trashCan, width * -0.1, height * 0.85, sizez * 0.135, sizez * 0.135);
+	// image(trashCan, width * -0.09, height * 0.925, sizez * 0.135, sizez * 0.135);
+	image(trashBag, width * -0.2, height * 0.9, sizez * 0.18, sizez * 0.18);
+	image(trashCan2, width * -0.16, height * 1, sizez * 0.135, sizez * 0.135);
+	image(trashBag2, width * -0.15, height * 0.215, sizez * 0.18, sizez * 0.18);
 
 }

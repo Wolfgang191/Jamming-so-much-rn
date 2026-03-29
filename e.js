@@ -3,7 +3,7 @@
 
 class E {
     constructor(y, speed) {
-        this.x = width * 2;
+        this.x = playerX + width * 1.2;
         this.y = y;
         this.speed = speed;
 
@@ -14,7 +14,7 @@ class E {
 
     display() {
         fill('red');
-        image(this.randomE, this.x, this.y, sizez * 0.05, sizez * 0.05);
+        image(this.randomE, this.x, this.y, sizez * 0.08, sizez * 0.08);
     }
 
 
@@ -27,14 +27,15 @@ class E {
             // this.y = random(0, height);           
             // this.x = width * 2;
 
-            this.x = playerX + random(width, width * 2); 
+            // this.x = playerX + random(width, width * 2); 
+            this.x = playerX + width * 1.2
 		    this.y = random(height * 0.25, height * 0.75); 
         }
     }
 
 
     hitsPlayer() {
-        let eSize = sizez * 0.05;
+        let eSize = sizez * 0.08;
 
         return (
         this.x < playerX + playerSize / 2 &&
